@@ -1,14 +1,29 @@
 package hello.hello_spring.service;
 
 import hello.hello_spring.domain.Member;
+import hello.hello_spring.repository.MemoryMemberRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MemberSerivceTest {
 
-    MemberSerivce memberSerivce = new MemberSerivce();
-    private Member member1;
+    MemberSerivce memberSerivce;
+    MemoryMemberRepository memberRepository;
+
+    @BeforeEach
+    public void beforeEach() {
+        memberRepository = new MemoryMemberRepository();
+        memberSerivce = new MemberSerivce(memberRepository);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        memberRepository.clearStore();
+    }
 
     @Test
     void 회원가입() {
@@ -34,6 +49,15 @@ class MemberSerivceTest {
         member2.setName("spring");
 
         //when
+        memberSerivce.join(member1);
+        assertThrows(IllegalStateException.class, () -> memberSerivce.join(member2));
+
+//        try {
+//            memberSerivce.join(member2);
+//            fail("예외가 발생해야 합니다.");
+//        } catch (IllegalStateException e) {
+//            assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
+//        }
 
         //then
     }
